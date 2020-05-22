@@ -1,40 +1,33 @@
-"""Represent a board with ai features."""
-from modules.btree import StateTree
-from modules.baseboard import BaseBoard, print_color
+"""Represent a full board with ai features."""
+from modules.full_tree import FullStateTree
+from modules.full_baseboard import FullBaseBoard, print_color
 
 
-class Board(BaseBoard):
+class FullBoard(FullBaseBoard):
     """Represent a board with ai features."""
 
     # colors for text representation
     COLOR_MAP = {
-        BaseBoard.HUMAN: (50, 150, 255),
-        BaseBoard.AI: (255, 100, 100),
-        BaseBoard.EMPTY: (255, 230, 55)
+        FullBaseBoard.HUMAN: (50, 150, 255),
+        FullBaseBoard.AI: (255, 100, 100),
+        FullBaseBoard.EMPTY: (255, 230, 55)
     }
 
-    def get_ai_move(self, verbose: bool = False) -> (int, int):
+    def get_ai_move(self) -> (int, int):
         """Get ai move from the binary decision tree.
 
-        :param verbose: whether to print the randomly chosen choices
         :return: likely a more optimal move
+        Note: a better approach would be to use the Minimax algorythm
         """
-        choice_a, choice_b = self._get_random_moves()
-        if choice_b is None:
-            return choice_a
+        choices = self._get_random_moves()
 
-        tree_a = StateTree(self, choice_a)
-        tree_b = StateTree(self, choice_b)
+        trees = []
+        for choice in choices:
+            new_tree = FullStateTree(self, choice)
+            new_tree.build_tree()
+            trees.append(new_tree)
 
-        tree_a.build_tree()
-        tree_b.build_tree()
-
-        if verbose:
-            print_color(f"Between {choice_a} and {choice_b} the better choice"
-                        f" probably is...",
-                        fg=self.COLOR_MAP[self.AI], end="")
-
-        return max(tree_a, tree_b, key=lambda tr: tr.get_points()).choice
+        return max(trees, key=lambda tr: tr.get_points()).choice
 
     @staticmethod
     def _color_str(raw_str: str, color: (int, int, int)) -> str:

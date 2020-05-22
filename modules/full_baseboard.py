@@ -1,5 +1,4 @@
-"""Error classes, helper print functions and BaseBoard."""
-from random import sample
+"""Error classes, helper print functions and full BaseBoard."""
 from typing import Optional
 DIM = 3
 
@@ -16,7 +15,7 @@ class BeyondBoardError(Exception):
     pass
 
 
-class BaseBoard:
+class FullBaseBoard:
     """Represent a base board without ai features."""
 
     # symbols for representation
@@ -33,7 +32,6 @@ class BaseBoard:
     _DIAG_I = tuple(tuple((i, i) for i in j)
                     for j in (range(DIM), range(-DIM, 0)))
     CHECK_I = _ROW_I + _COL_I + _DIAG_I
-    MOVES_NUM = 2
 
     def __init__(self, state: list = None, last_pos: (int, int) = None,
                  last_symbol: str = None):
@@ -104,10 +102,7 @@ class BaseBoard:
         :return: two random moves - (int, int) tuples If only one move is
         left, return it and None instead of the second one.
         """
-        free_cells = [cell for cell in self.get_free_cells()]
-        if len(free_cells) == 1:
-            return free_cells[0], None
-        return sample(free_cells, k=self.MOVES_NUM)
+        return [cell for cell in self.get_free_cells()]
 
 
 def print_color(*args, fg=None, bg=None, sep=" ", end="\n"):
